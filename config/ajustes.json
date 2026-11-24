@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "descripcion": "Ajustes generales de Viernes. Aqui NUNCA van claves ni contrasenas.",
+  "asistente": {
+    "nombre": "Viernes",
+    "idioma": "es-419",
+    "volumen": 70,
+    "modo_escucha": "boton"
+  },
+  "ia": {
+    "proveedor": "anthropic",
+    "modelo": "claude-haiku-4-5",
+    "max_tokens_respuesta": 200,
+    "proveedores_disponibles": ["anthropic", "openai", "gemini", "groq", "ollama"],
+    "nota_clave": "La API key se guarda en la memoria NVS del ESP32, nunca en este archivo."
+  },
+  "red": {
+    "nombre_mdns": "viernes",
+    "sincronizar_cada_minutos": 30,
+    "reintentos_wifi": 3
+  }
+}
