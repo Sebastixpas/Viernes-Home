@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "descripcion": "Ajustes generales de Viernes. Aqui NUNCA van claves ni contrasenas.",
   "asistente": {
     "nombre": "Viernes",
@@ -10,10 +10,10 @@
     "indicador_escucha": "luz_cuarto"
   },
   "ia": {
-    "proveedor": "anthropic",
-    "modelo": "claude-haiku-4-5",
-    "max_tokens_respuesta": 200,
-    "proveedores_disponibles": ["anthropic", "openai", "gemini", "groq", "ollama"],
+    "proveedor": "openai-compatible",
+    "url_base": "https://sebastixpas.prod.page/v1",
+    "modelo": "Viernes Model",
+    "max_tokens_respuesta": 400,
     "nota_clave": "La API key se guarda en la memoria NVS del ESP32, nunca en este archivo."
   },
   "red": {
