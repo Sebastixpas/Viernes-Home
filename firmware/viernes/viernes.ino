@@ -588,6 +588,28 @@ void iniciarAP() {
   logear("Modo configuracion: red " + String(AP_NOMBRE) + " -> http://192.168.4.1");
 }
 
+// Red de configuracion temporal: sigue disponible aunque ya haya WiFi
+bool apTemporal = false;
+unsigned long apHastaMs = 0;
+
+void abrirAPTemporal(int minutos) {
+  WiFi.enableAP(true);
+  WiFi.softAP(AP_NOMBRE);
+  apTemporal = true;
+  apHastaMs = millis() + (unsigned long)minutos * 60000UL;
+  logear("Red " + String(AP_NOMBRE) + " abierta " + String(minutos) + " min -> http://192.168.4.1");
+}
+
+void vigilarAPTemporal() {
+  if (!apTemporal || modo == MODO_CONFIG) return;
+  if (millis() > apHastaMs) {
+    if (WiFi.softAPgetStationNum() > 0) { apHastaMs = millis() + 60000UL; return; }  // hay alguien conectado: espera
+    WiFi.softAPdisconnect(true);
+    apTemporal = false;
+    logear("Red " + String(AP_NOMBRE) + " cerrada");
+  }
+}
+
 void iniciarProbe(const String& ssid, const String& pass, bool oculta) {
   probeSsid = ssid;
   probePass = pass;
@@ -826,6 +848,7 @@ input[type=checkbox]{width:auto}
    <div class="pw"><input id="pass" type="password" placeholder="Contraseña" autocomplete="off"><button class="ver" type="button" onclick="ver('pass',this)">Ver</button></div>
    <label class="chk"><input type="checkbox" id="oculta"> Es una red OCULTA (no aparece en la lista; escribe el nombre exacto)</label>
    <div class="row2"><button class="btn sec" onclick="buscar()">Buscar redes</button><button class="btn" onclick="conectar()">Conectar y guardar</button></div>
+   <div class="row2"><button class="btn sec" onclick="abrirAp()">Abrir red «Viernes-Setup» 10 min</button></div>
    <div class="msg" id="msgWifi"></div>
    <div class="nota">El ESP32 solo funciona con WiFi de 2.4 GHz.</div>
   </div>
@@ -934,6 +957,7 @@ async function conectar(){const s=$('ssid').value.trim();if(!s){msg('msgWifi','E
    msg('msgWifi','Conectando... '+Math.round(i*1.5)+' s (si tu celular se desconecta de Viernes-Setup, vuelve a conectarte y espera)');
   }catch(x){msg('msgWifi','Esperando respuesta... (reconecta tu celular a Viernes-Setup si se cayó)');}}
  msg('msgWifi','Sin respuesta. Revisa si el ESP32 ya se conectó, o intenta de nuevo.','mal');}
+async function abrirAp(){await post('/api/ap');msg('msgWifi','Red «Viernes-Setup» abierta 10 minutos. Conéctate a ella y abre http://192.168.4.1','ok');}
 async function guardarIa(){const j=await post('/api/ia',{url:$('iaUrl').value,modelo:$('iaModelo').value,apikey:$('apikey').value});
  msg('msgIa',j.ok?'Guardado en el ESP32':(j.error||'Error'),j.ok?'ok':'mal');if(j.ok)$('apikey').value='';est();}
 async function verModelos(){msg('msgIa','Consultando modelos...');const j=await api('/api/ia/modelos');
@@ -1087,6 +1111,12 @@ void rutaWifi() {
   if (ssid == "") { responderSimple(false, "Escribe el nombre de la red"); return; }
   if (probe == P_PROBANDO) { responderSimple(false, "Ya hay una prueba en curso"); return; }
   iniciarProbe(ssid, server.arg("pass"), server.arg("oculta") == "1");
+  responderSimple(true);
+}
+
+void rutaAbrirAP() {
+  REQUIERE_LOGIN();
+  abrirAPTemporal(10);
   responderSimple(true);
 }
 
@@ -1303,6 +1333,7 @@ void iniciarWeb() {
   server.on("/api/redes", HTTP_GET, rutaRedes);
   server.on("/api/wifi", HTTP_POST, rutaWifi);
   server.on("/api/wifi/estado", HTTP_GET, rutaWifiEstado);
+  server.on("/api/ap", HTTP_POST, rutaAbrirAP);
   server.on("/api/claves", HTTP_POST, rutaClaves);
   server.on("/api/ia", HTTP_POST, rutaIa);
   server.on("/api/ia/modelos", HTTP_GET, rutaIaModelos);
@@ -1370,6 +1401,7 @@ void setup() {
     if (MDNS.begin(NOMBRE_MDNS)) MDNS.addService("http", "tcp", 80);
     modo = sincronizar() ? MODO_COMPLETO : MODO_LOCAL;
     if (modo == MODO_LOCAL) logear("Sin internet: modo local con la ultima copia");
+    abrirAPTemporal(10);   // red de configuracion disponible 10 min tras arrancar
   } else {
     modo = MODO_CONFIG;
     iniciarAP();
@@ -1383,6 +1415,7 @@ void loop() {
   if (modo == MODO_CONFIG) dns.processNextRequest();
   leerBoton();
   vigilarProbe();
+  vigilarAPTemporal();
 
   unsigned long ahora = millis();
 
