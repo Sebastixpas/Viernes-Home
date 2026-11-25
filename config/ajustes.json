@@ -1,11 +1,13 @@
 {
-  "version": 1,
+  "version": 2,
   "descripcion": "Ajustes generales de Viernes. Aqui NUNCA van claves ni contrasenas.",
   "asistente": {
     "nombre": "Viernes",
     "idioma": "es-419",
     "volumen": 70,
-    "modo_escucha": "boton"
+    "modo_escucha": "boton",
+    "audio": "PC",
+    "indicador_escucha": "luz_cuarto"
   },
   "ia": {
     "proveedor": "anthropic",

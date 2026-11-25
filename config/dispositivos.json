@@ -1,14 +1,15 @@
 {
-  "version": 1,
+  "version": 2,
   "descripcion": "Lista de aparatos de Viernes. Aqui NUNCA van claves ni contrasenas.",
   "pines_permitidos": [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 38, 39, 40, 41, 42],
   "dispositivos": [
     {
-      "id": "led_prueba",
-      "nombre": "LED de prueba",
-      "alias": ["led", "luz de prueba", "lucecita"],
+      "id": "luz_cuarto",
+      "nombre": "Luz del cuarto",
+      "alias": ["luz", "luz del cuarto", "foco", "lucecita"],
       "pin": 4,
       "tipo": "led",
+      "descripcion": "GPIO4 · LED",
       "activo_en": "alto",
       "estado_inicial": "apagado",
       "habilitado": true
@@ -19,29 +20,33 @@
       "alias": ["boton", "interruptor de escucha"],
       "pin": 5,
       "tipo": "boton",
+      "descripcion": "GPIO5 · interruptor",
       "activo_en": "bajo",
       "estado_inicial": "apagado",
       "habilitado": true
     },
     {
-      "id": "luz_sala",
-      "nombre": "Luz de la sala",
-      "alias": ["luz", "luz de la sala", "foco de la sala"],
-      "pin": 6,
+      "id": "ventilador",
+      "nombre": "Ventilador",
+      "alias": ["ventilador", "abanico"],
+      "pin": 10,
       "tipo": "rele",
+      "descripcion": "GPIO10 · módulo de relé",
       "activo_en": "bajo",
       "estado_inicial": "apagado",
       "habilitado": false
     },
     {
-      "id": "ventilador",
-      "nombre": "Ventilador",
-      "alias": ["ventilador", "abanico"],
-      "pin": 7,
-      "tipo": "rele",
-      "activo_en": "bajo",
+      "id": "cortina",
+      "nombre": "Cortina",
+      "alias": ["cortina", "persiana"],
+      "pin": -1,
+      "tipo": "motor",
+      "descripcion": "Driver A4988 · motor",
+      "activo_en": "alto",
       "estado_inicial": "apagado",
-      "habilitado": false
+      "habilitado": false,
+      "proximamente": true
     }
   ]
 }
