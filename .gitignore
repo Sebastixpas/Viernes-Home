@@ -1,4 +1,0 @@
-# Archivos con claves: NUNCA se suben a GitHub
-firmware/viernes/secrets.h
-*.secret
-.env
